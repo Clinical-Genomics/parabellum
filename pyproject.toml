@@ -1,0 +1,7 @@
+[project]
+name = "parabellum"
+version = "0.1.0"
+description = "Investigate paraphase json"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
