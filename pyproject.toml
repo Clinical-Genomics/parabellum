@@ -2,6 +2,23 @@
 name = "parabellum"
 version = "0.1.0"
 description = "Investigate paraphase json"
+authors = [{name="Felix Lenner", email="felix.lenner@ki.se"}]
+license = {text = "MIT License"}
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "pyyaml>=6.0.3",
+    "typer>=0.20.0",
+]
+
+[project.scripts]
+parabellum = "parabellum.main:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv.workspace]
+members = [
+    "tests",
+]
