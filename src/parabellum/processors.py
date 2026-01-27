@@ -1,4 +1,3 @@
-from typing import List
 from .constants import OP_MAP
 from .exceptions import InvalidOperatorError, ListOpNotSupportedError
 from .config import ProcessingConfig

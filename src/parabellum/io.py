@@ -29,33 +29,9 @@ def load_json(file: Path):
         raise JSONLoadError(f"Failed to read JSON file {file}: {e}")
 
 
-# Test Scout parseing example
-# IMPORTANT! Display all keys for a gene, some are not always present
-# TODO: Make TSV
-def parse_output(json_data: Dict):
-    """
-    Parse the output JSON.
-    """
-    for sample, genes in json_data.items():
-        for gene, gene_info in genes.items():
-            for key, val in gene_info.items():
-                if (
-                    isinstance(val, dict)
-                    and {"value", "normal", "flag"}.issubset(val)
-                    and val["flag"]
-                ):
-                    print(
-                        f"Flagging region {gene} in sample {sample} because of key {key} (value: {val['value']}, normal: {val['normal']})"
-                    )
-
-
 def print_tsv(json_data: Dict) -> List[Tuple[str, str, str, float, float]]:
     """
-    Print results in "TSV" format:
-
-    Sample | Gene | Key | Value
-
-    Where Value sometimes is a numeric, sometimes a list and sometimes a dict.
+    Print results in TSV format.
     """
     print("sample\tgene\tkey_is_flagged\tkey\tvalue_str")
 
