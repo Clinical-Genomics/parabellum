@@ -27,10 +27,10 @@ uv run parabellum \
     --input test-data/HG002.paraphase.json \
     --input test-data/HG003.paraphase.json \
     --input test-data/HG004.paraphase.json \
-    --sample test-data/HG002 \
-    --sample test-data/HG003 \
-    --sample test-data/HG004 \
+    --sample HG002 \
+    --sample HG003 \
+    --sample HG004 \
     --normal test-data/normal_values.yaml \
-    --genes CFH,CFHR3,F8,GBA,HBA,IKBKG,NCF1,NEB,OPN1LW,PMS2,RCCX,SMN1,STRC
+    --genes CFH,CFHR3,f8,GBA,hba,ikbkg,ncf1,neb,opn1lw,pms2,rccx,smn1,strc
 ```
 
