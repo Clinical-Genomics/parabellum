@@ -7,7 +7,7 @@ Parse paraphase JSONs.
 ```
  Usage: parabellum [OPTIONS]
 
- Flatten Paraphase JSON fields, handle special cases like region_depth and final_haplotypes and merge into a multi-sample file.
+ Parse paraphase JSONs.
 
 ╭─ Options ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │ *  --input          -f      FILE  Input JSON files (can be multiple) [required]                                                               │
@@ -33,3 +33,4 @@ uv run parabellum \
     --normal test-data/normal_values.yaml \
     --genes CFH,CFHR3,F8,GBA,HBA,IKBKG,NCF1,NEB,OPN1LW,PMS2,RCCX,SMN1,STRC
 ```
+
