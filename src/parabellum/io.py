@@ -11,6 +11,7 @@ coloredlogs.install(level="INFO")
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+
 def load_yaml(file: Path):
     try:
         with file.open("r", encoding="utf-8") as f:
@@ -68,7 +69,7 @@ def print_tsv(json_data: Dict) -> List[Tuple[str, str, str, float, float]]:
                     # Flag in Scout
                     if val["flag"]:
                         logger.info(
-                            f"Flagging region {gene} in sample {sample} because of key {key} (value: {val["value"]}, normal: {val["normal"]})"
+                            f"Flagging region {gene} in sample {sample} because of key {key} (value: {val['value']}, normal: {val['normal']})"
                         )
                 else:
                     print(f"{sample}\t{gene}\t{key}\t{stringify_value(val)}")
@@ -105,7 +106,9 @@ def stringify_value(value) -> str | None:
             if isinstance(v, dict):
                 # inside nested dict, replace : with =
                 # e.g. for {'CFH_hap1': {'type': 'deletion', 'breakpoint': [[196757557, 196760029], [196842234, 196844710]]}}
-                sub_items = [f"{subk}={stringify_value(subv)}" for subk, subv in v.items()]
+                sub_items = [
+                    f"{subk}={stringify_value(subv)}" for subk, subv in v.items()
+                ]
                 items.append(f"{k}:{'|'.join(sub_items)}")
             else:
                 items.append(f"{k}:{stringify_value(v)}")
