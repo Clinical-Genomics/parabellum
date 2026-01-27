@@ -1,0 +1,41 @@
+CFH:
+  fusions_called:
+    op: "!="
+    normal: {}
+CFHR3:
+  fusions_called:
+    op: "!="
+    normal: {}
+f8:
+  sv_called:
+    op: "!="
+    normal: {}
+GBA:
+  fusions_called:
+    op: "!="
+    normal: {}
+hba:
+  genotype:
+    op: "!="
+    normal: "aa/aa"
+  sv_called:
+    op: "!="
+    normal: {}
+ikbkg:
+  deletion_haplotypes:
+    op: "!="
+    normal: []
+rccx:
+  annotated_alleles:
+    op: "!="
+    normal:
+      - WT
+      - WT
+smn1:
+  smn1_cn:
+    op: "<"
+    normal: 2
+strc:
+  gene_cn:
+    op: "!="
+    normal: 2
