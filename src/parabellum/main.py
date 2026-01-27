@@ -50,8 +50,9 @@ def main(
     genes: Optional[str] = typer.Option(
         None, help="Optional comma-separated list of gene names to process"
     ),
-    output_format: str = typer.Option("json", "--output-format", "-o", help="Output format: 'json' (default) or 'tsv'")
-
+    output_format: str = typer.Option(
+        "json", "--output-format", "-o", help="Output format: 'json' (default) or 'tsv'"
+    ),
 ):
     """
     Flatten Paraphase JSON fields, handle special cases like region_depth and final_haplotypes

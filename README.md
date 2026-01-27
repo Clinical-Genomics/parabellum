@@ -33,4 +33,3 @@ uv run parabellum \
     --normal test-data/normal_values.yaml \
     --genes CFH,CFHR3,F8,GBA,HBA,IKBKG,NCF1,NEB,OPN1LW,PMS2,RCCX,SMN1,STRC
 ```
-

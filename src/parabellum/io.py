@@ -13,13 +13,14 @@ logger.setLevel(logging.INFO)
 logger = logging.getLogger("paraphase")
 logger.setLevel(logging.DEBUG)  # capture all levels
 
+
 class ColoredFormatter(logging.Formatter):
     COLORS = {
-        "INFO": "\033[93m",     # yellow
+        "INFO": "\033[93m",  # yellow
         "WARNING": "\033[91m",  # red
-        "ERROR": "\033[91m",    # red
-        "DEBUG": "\033[94m",    # blue
-        "RESET": "\033[0m"
+        "ERROR": "\033[91m",  # red
+        "DEBUG": "\033[94m",  # blue
+        "RESET": "\033[0m",
     }
 
     def format(self, record):
@@ -37,6 +38,7 @@ handler.setFormatter(ColoredFormatter("%(levelname)s: %(message)s"))
 if logger.hasHandlers():
     logger.handlers.clear()
 logger.addHandler(handler)
+
 
 def load_yaml(file: Path):
     try:
@@ -66,11 +68,14 @@ def parse_output(json_data: Dict):
         for gene, gene_info in genes.items():
             for key, val in gene_info.items():
                 if (
-                    isinstance(val, dict) and {"value", "normal", "flag"}.issubset(val) and val["flag"]
+                    isinstance(val, dict)
+                    and {"value", "normal", "flag"}.issubset(val)
+                    and val["flag"]
                 ):
                     print(
                         f"Flagging region {gene} in sample {sample} because of key {key} (value: {val['value']}, normal: {val['normal']})"
                     )
+
 
 def print_tsv(json_data: Dict) -> List[Tuple[str, str, str, float, float]]:
     """
@@ -92,12 +97,14 @@ def print_tsv(json_data: Dict) -> List[Tuple[str, str, str, float, float]]:
 
                     # Flag in Scout
                     if val["flag"]:
-                        logger.info(f"Flagging region {gene} in sample {sample} because of key {key} (value: {value_str}, normal: {normal_str})")
+                        logger.info(
+                            f"Flagging region {gene} in sample {sample} because of key {key} (value: {value_str}, normal: {normal_str})"
+                        )
                 else:
                     print(f"{sample}\t{gene}\t{key}\t{stringify_value(val)}")
 
-
     return flagged
+
 
 def stringify_value(value) -> str | None:
     """
