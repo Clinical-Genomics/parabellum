@@ -57,6 +57,7 @@ def print_tsv(json_data: Dict) -> List[Tuple[str, str, str, float, float]]:
 
     Where Value sometimes is a numeric, sometimes a list and sometimes a dict.
     """
+    print("sample\tgene\tkey_is_flagged\tkey\tvalue_str")
 
     for sample, genes in json_data.items():
         for gene, gene_info in genes.items():
