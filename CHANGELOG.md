@@ -9,5 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- [#2](https://github.com/Clinical-Genomics/parabellum/pull/2) - LICENCE
+- [#2](https://github.com/Clinical-Genomics/parabellum/pull/2) - Paraphase JSON parsing
 - [#3](https://github.com/Clinical-Genomics/parabellum/pull/3) - CHANGELOG and reminder workflow
 - [#3](https://github.com/Clinical-Genomics/parabellum/pull/3) - CODEOWNERS and PR template
