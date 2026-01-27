@@ -1,8 +1,8 @@
 [project]
 name = "parabellum"
 version = "0.1.0"
-description = "Investigate paraphase json"
-authors = [{name="Felix Lenner", email="felix.lenner@ki.se"}]
+description = "Parse paraphase JSONs"
+authors = [{name="Felix Lenner", email="felix.lenner@scilifelab.se"}]
 license = {text = "MIT License"}
 readme = "README.md"
 requires-python = ">=3.12"
