@@ -80,11 +80,11 @@ def print_tsv(json_data: Dict) -> List[Tuple[str, str, str, float, float]]:
 
 def stringify_value(value) -> str | None:
     """
-    Convert any value into a string for TSV.
-    - Lists are joined by commas
-    - Nested lists are flattened
-    - Dicts are converted to key:value pairs, with nested lists flattened
-    - None / empty list / empty dict return None
+    Flatten nested dicts/lists for TSV output.
+    - Skip empty or None values.
+    - Top-level dict: key:value
+    - Nested dicts: key=subkey=subvalue
+    - Lists: joined by commas
     """
     if value in (None, [], {}):
         return None
@@ -96,23 +96,31 @@ def stringify_value(value) -> str | None:
         flat = []
         for v in value:
             if isinstance(v, list):
-                flat.extend(map(str, v))
-            else:
+                inner = [str(i) for i in v if i is not None]
+                if inner:
+                    flat.append(",".join(inner))
+            elif v is not None:
                 flat.append(str(v))
         return ",".join(flat) if flat else None
 
     if isinstance(value, dict):
         items = []
         for k, v in value.items():
+            if v in (None, [], {}):
+                continue
             if isinstance(v, dict):
-                # inside nested dict, replace : with =
-                # e.g. for {'CFH_hap1': {'type': 'deletion', 'breakpoint': [[196757557, 196760029], [196842234, 196844710]]}}
+                # nested dicts: subkey=subvalue
                 sub_items = [
-                    f"{subk}={stringify_value(subv)}" for subk, subv in v.items()
+                    f"{subk}={stringify_value(subv)}"
+                    for subk, subv in v.items()
+                    if stringify_value(subv) is not None
                 ]
-                items.append(f"{k}:{'|'.join(sub_items)}")
+                if sub_items:
+                    items.append(f"{k}:{'|'.join(sub_items)}")
             else:
-                items.append(f"{k}:{stringify_value(v)}")
+                v_str = stringify_value(v)
+                if v_str is not None:
+                    items.append(f"{k}:{v_str}")
         return ";".join(items) if items else None
 
     return str(value)
