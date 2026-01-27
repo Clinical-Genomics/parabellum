@@ -1,4 +1,5 @@
 from pathlib import Path
+import coloredlogs
 import yaml
 import json
 import logging
@@ -6,39 +7,9 @@ import sys
 from .exceptions import JSONLoadError, YAMLLoadError
 from typing import Dict, List, Tuple
 
-logger = logging.getLogger("paraphase")
-logger.setLevel(logging.INFO)
-
-# Create a single logger
-logger = logging.getLogger("paraphase")
-logger.setLevel(logging.DEBUG)  # capture all levels
-
-
-class ColoredFormatter(logging.Formatter):
-    COLORS = {
-        "INFO": "\033[93m",  # yellow
-        "WARNING": "\033[91m",  # red
-        "ERROR": "\033[91m",  # red
-        "DEBUG": "\033[94m",  # blue
-        "RESET": "\033[0m",
-    }
-
-    def format(self, record):
-        color = self.COLORS.get(record.levelname, self.COLORS["RESET"])
-        message = super().format(record)
-        return f"{color}{message}{self.COLORS['RESET']}"
-
-
-# Single handler for stdout
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.DEBUG)
-handler.setFormatter(ColoredFormatter("%(levelname)s: %(message)s"))
-
-# Remove default handlers if any, then add ours
-if logger.hasHandlers():
-    logger.handlers.clear()
-logger.addHandler(handler)
-
+coloredlogs.install(level="INFO")
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 def load_yaml(file: Path):
     try:
