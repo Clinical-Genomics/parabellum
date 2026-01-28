@@ -7,6 +7,7 @@ OP_MAP = {
     "<=": operator.le,
     "!=": operator.ne,
     "==": operator.eq,
+    "not_in": lambda value, normal: value not in normal,
 }
 
 DEFAULT_SKIP_KEYS = (

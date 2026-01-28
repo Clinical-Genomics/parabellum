@@ -51,9 +51,9 @@ def process_gene_info(gene_name, gene_info, handlers, skip_keys, normal_values):
             normal = normal_values[gene_name][key]["normal"]
             op = normal_values[gene_name][key]["op"]
 
-            if isinstance(value, list) and (op != "==" and op != "!="):
+            if isinstance(value, list) and op not in ["==", "!=", "not_in"]:
                 raise ListOpNotSupportedError(
-                    f"{gene_name} {key} is a list and op is {op}. Only '==' or '!=' is supported for lists."
+                    f"{gene_name} {key} is a list and op is {op}. Only '==', '!=' or 'not_in' is supported for lists."
                 )
             if op not in OP_MAP:
                 raise InvalidOperatorError(
@@ -64,6 +64,9 @@ def process_gene_info(gene_name, gene_info, handlers, skip_keys, normal_values):
             flag = False
             if op == "between":
                 flag = not (rule["min"] <= value <= rule["max"])
+                write_flag = True
+            if op == "not_in":
+                flag = value not in normal
                 write_flag = True
             elif op in OP_MAP:
                 flag = OP_MAP[op](value, normal)

@@ -1,41 +1,60 @@
 CFH:
   fusions_called:
-    op: "!="
-    normal: {}
+    op: "not_in"
+    normal:
+      - {}
+      - []
 CFHR3:
   fusions_called:
-    op: "!="
-    normal: {}
+    op: "not_in"
+    normal:
+      - {}
+      - []
 f8:
   sv_called:
-    op: "!="
-    normal: {}
+    op: "not_in"
+    normal:
+      - {}
+      - []
 GBA:
   fusions_called:
-    op: "!="
-    normal: {}
+    op: "not_in"
+    normal:
+      - {}
+      - []
 hba:
   genotype:
-    op: "!="
-    normal: "aa/aa"
+    op: "not_in"
+    normal:
+      - "aa/aa"
   sv_called:
-    op: "!="
-    normal: {}
+    op: "not_in"
+    normal:
+     - {}
+     - []
 ikbkg:
   deletion_haplotypes:
-    op: "!="
-    normal: []
+    op: "not_in"
+    normal:
+    - {}
+    - []
 rccx:
   annotated_alleles:
-    op: "!="
+    op: "not_in"
     normal:
-      - WT
-      - WT
+      - ['WT', 'WT']
+      - ['WT', 'pseudogene_duplication']
+      - ['WT', 'pseudogene_deletion']
+      - []
 smn1:
   smn1_cn:
     op: "<"
     normal: 2
 strc:
   gene_cn:
-    op: "!="
+    op: "!=" # Should this be less than?
+    normal: 2
+ncf1:
+  gene_cn:
+    op: "!=" # Should this be less than?
     normal: 2
