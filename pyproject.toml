@@ -19,11 +19,6 @@ parabellum = "parabellum.main:app"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.uv.workspace]
-members = [
-    "tests",
-]
-
 [dependency-groups]
 dev = [
     "pytest-cov>=7.0.0",
