@@ -37,20 +37,20 @@ def print_tsv(json_data: Dict) -> List[Tuple[str, str, str, float, float]]:
 
     for sample, genes in json_data.items():
         for gene, gene_info in genes.items():
-            key_is_flagged = False
             for key, val in gene_info.items():
+                is_flagged = False
                 if isinstance(val, dict) and {"value", "normal", "flag"}.issubset(val):
                     value_str = stringify_value(val["value"])
                     # Flag in Scout
                     if val["flag"]:
-                        key_is_flagged = True
+                        is_flagged = True
                         logger.info(
                             f"Flagging region {gene} in sample {sample} because of key {key} (value: {val['value']}, normal: {val['normal']})"
                         )
-                    print(f"{sample}\t{gene}\t{key_is_flagged}\t{key}\t{value_str}")
+                    print(f"{sample}\t{gene}\t{is_flagged}\t{key}\t{value_str}")
                 else:
                     print(
-                        f"{sample}\t{gene}\t{key_is_flagged}\t{key}\t{stringify_value(val)}"
+                        f"{sample}\t{gene}\t{is_flagged}\t{key}\t{stringify_value(val)}"
                     )
 
 
