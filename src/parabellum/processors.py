@@ -42,40 +42,68 @@ def process_gene_info(gene_name, gene_info, handlers, skip_keys, normal_values):
 
         if key in handlers:
             value = handlers[key](value)
-        if (
-            normal_values
-            and gene_name in normal_values
-            and key in normal_values[gene_name]
-        ):
-            rule = normal_values[gene_name][key]
-            normal = normal_values[gene_name][key]["normal"]
-            op = normal_values[gene_name][key]["op"]
 
-            if isinstance(value, list) and op not in ["==", "!=", "not_in"]:
-                raise ListOpNotSupportedError(
-                    f"{gene_name} {key} is a list and op is {op}. Only '==', '!=' or 'not_in' is supported for lists."
+        rule = normal_values.get(gene_name, {}).get(key)
+        if not rule:
+            processed[key] = value
+            continue
+
+        op = rule["op"]
+        normal = rule.get("normal")
+        normal_key = rule.get("normal_key")
+
+        if isinstance(value, list) and op not in ["==", "!=", "not_in"]:
+            raise ListOpNotSupportedError(
+                f"{gene_name} {key} is a list and op is {op}. Only '==', '!=' or 'not_in' is supported for lists."
+            )
+        if op not in OP_MAP and op not in ["between", "not_between"]:
+            raise InvalidOperatorError(
+                f"{gene_name} {key} has unsupported operator '{op}'."
+            )
+
+        if normal_key:
+            normal_value = gene_info.get(normal_key)
+            if normal_value is None:
+                raise KeyError(
+                    f"{gene_name}: key '{rule['normal_key']}' not found for comparison with '{key}'"
                 )
-            if op not in OP_MAP:
-                raise InvalidOperatorError(
-                    f"{gene_name} {key} has unsupported operator '{op}'."
-                )
-
-            write_flag = False
-            flag = False
-            if op == "between":
-                flag = not (rule["min"] <= value <= rule["max"])
-                write_flag = True
-            if op == "not_in":
-                flag = value not in normal
-                write_flag = True
-            elif op in OP_MAP:
-                flag = OP_MAP[op](value, normal)
-                write_flag = True
-
-            if write_flag:
-                processed[key] = {"value": value, "normal": normal, "flag": flag}
+            display_normal = normal_value
+        else:
+            if rule.get("min") is not None and rule.get("max") is not None:
+                normal_value = None  # will use min/max for comparison
+                display_normal = f"min({rule['min']}) - max({rule['max']})"
             else:
-                processed[key] = value
+                normal_value = normal
+                display_normal = normal
+            if normal_value is None and op not in ["between", "not_between", "not_in"]:
+                raise ValueError(
+                    f"{gene_name} {key} has neither 'normal' nor 'normal_key'"
+                )
+
+        if op in ["<", "<=", ">", ">=", "between", "not_between"]:
+            try:
+                value_numeric = float(value)
+                normal_numeric = (
+                    float(normal_value) if normal_value is not None else None
+                )
+            except (TypeError, ValueError):
+                raise TypeError(
+                    f"{gene_name} {key}: cannot compare non-numeric values: {value} < {normal_value}"
+                )
+
+        if op == "between":
+            flag = rule["min"] <= value_numeric <= rule["max"]
+        elif op == "not_between":
+            flag = not (rule["min"] <= value_numeric <= rule["max"])
+        elif op == "not_in":
+            flag = value not in normal_value
+        elif op in ["<", "<=", ">", ">="]:
+            flag = OP_MAP[op](value_numeric, normal_numeric)
+        else:
+            flag = OP_MAP[op](value, normal_value)
+
+        if flag:
+            processed[key] = {"value": value, "normal": display_normal, "flag": flag}
         else:
             processed[key] = value
 

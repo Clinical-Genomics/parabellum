@@ -48,7 +48,7 @@ rccx:
       - []
 smn1:
   smn1_cn:
-    op: "<"
+    op: "!=" # Should this be less than?
     normal: 2
 strc:
   gene_cn:
