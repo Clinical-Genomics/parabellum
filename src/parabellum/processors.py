@@ -105,7 +105,7 @@ def process_gene_info(gene_name, gene_info, handlers, skip_keys, normal_values):
         if flag:
             processed[key] = {"value": value, "normal": display_normal, "flag": flag}
         else:
-            processed[key] = value
+            processed[key] = {"value": value, "normal": display_normal, "flag": flag}
 
     return processed
 
