@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+NUMERIC_FUNCS = {
+    ">": operator.gt,
+    ">=": operator.ge,
+    "<": operator.lt,
+    "<=": operator.le,
+}
 
-JsonLike = Union[Dict[str, Any], List[Any], str, int, float, bool, None]
-
-
-NUMERIC_OPS = {">", ">=", "<", "<="}
 COMPARISON_OPS = {
     ">",
     ">=",
@@ -66,14 +68,7 @@ def _apply_op(actual: Any, op: str, expected: Any) -> bool:
         e = _coerce_numeric(expected)
         if a is None or e is None:
             return False
-        if op == ">":
-            return a > e
-        if op == ">=":
-            return a >= e
-        if op == "<":
-            return a < e
-        if op == "<=":
-            return a <= e
+        return NUMERIC_FUNCS[op](a, e)
 
     if op == "==":
         return actual == expected
@@ -90,7 +85,7 @@ def _apply_op(actual: Any, op: str, expected: Any) -> bool:
     if op == "not_contains":
         return expected not in (actual or [])
 
-    return False
+    raise ValueError(f"Unsupported operator: {op}")
 
 
 def _eval_leaf(gene_info: Dict[str, Any], leaf: Dict[str, Any]) -> bool:
