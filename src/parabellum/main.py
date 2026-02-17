@@ -64,8 +64,7 @@ def main(
             if skip_keys
             else list(DEFAULT_SKIP_KEYS)
         )
-        # TODO: Genes should not be case-sensitive
-        genes_list = [g.strip() for g in genes.split(",")] if genes else None
+        genes_list = [g.strip().lower() for g in genes.split(",")] if genes else None
         assert_equal_inputs_and_samples(input, sample)
 
         # Get input files
