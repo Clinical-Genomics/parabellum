@@ -28,7 +28,7 @@ def test_process_paraphase_json():
 
     config = ProcessingConfig(
         skip_keys=set(),
-        genes_list=["smn1", "F8"],
+        genes_list=["smn1", "f8"],
         rules=None,
     )
 
