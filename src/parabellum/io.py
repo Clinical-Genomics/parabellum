@@ -33,25 +33,28 @@ def print_tsv(json_data: Dict) -> List[Tuple[str, str, str, float, float]]:
     """
     Print results in TSV format.
     """
-    print("sample\tgene\tkey_is_flagged\tkey\tvalue_str")
+    print("sample\tgene\tstatus\tkey\tvalue_str")
 
     for sample, genes in json_data.items():
         for gene, gene_info in genes.items():
+            # Gene-level status comes from the rules engine; if no rules were
+            # defined or no status was set, report it as "unknown".
+            gene_status = gene_info.get("status")
+            if not isinstance(gene_status, str):
+                gene_status = "unknown"
+
             for key, val in gene_info.items():
-                is_flagged = False
+                # Do not emit the per-gene status or rule-match metadata as separate rows.
+                if key in {"status", "status_matches"}:
+                    continue
+
+                # Backwards-compatibility for any existing {value, normal, flag} wrappers:
                 if isinstance(val, dict) and {"value", "normal", "flag"}.issubset(val):
                     value_str = stringify_value(val["value"])
-                    # Flag in Scout
-                    if val["flag"]:
-                        is_flagged = True
-                        logger.info(
-                            f"Flagging region {gene} in sample {sample} because of key {key} (value: {val['value']}, normal: {val['normal']})"
-                        )
-                    print(f"{sample}\t{gene}\t{is_flagged}\t{key}\t{value_str}")
                 else:
-                    print(
-                        f"{sample}\t{gene}\t{is_flagged}\t{key}\t{stringify_value(val)}"
-                    )
+                    value_str = stringify_value(val)
+
+                print(f"{sample}\t{gene}\t{gene_status}\t{key}\t{value_str}")
 
 
 def stringify_value(value) -> str | None:

@@ -35,14 +35,14 @@ def main(
         "-s",
         help="Sample names corresponding to input JSON files",
     ),
-    normal_yaml: Optional[Path] = typer.Option(
+    rules_yaml: Optional[Path] = typer.Option(
         None,
-        "--normal",
-        "-n",
+        "--rules",
+        "-r",
         exists=True,
         file_okay=True,
         dir_okay=False,
-        help="Optional YAML file with normal values per gene",
+        help="Optional YAML file with per-gene classification rules (adds 'status' fields)",
     ),
     skip_keys: str = typer.Option(
         None, help="Comma-separated keys to skip (e.g. region_depth,final_haplotypes)"
@@ -69,13 +69,13 @@ def main(
         assert_equal_inputs_and_samples(input, sample)
 
         # Get input files
-        normal_values = load_yaml(normal_yaml) if normal_yaml else {}
+        rules = load_yaml(rules_yaml) if rules_yaml else None
         json_data_list = [load_json(f) for f in input]
 
         config = ProcessingConfig(
-            normal_values=normal_values,
             skip_keys=set(skip_keys_list),
             genes_list=genes_list,
+            rules=rules,
         )
 
         merged_data = merge_and_process(json_data_list, sample, config)

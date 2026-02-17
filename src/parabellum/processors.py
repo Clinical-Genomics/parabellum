@@ -1,6 +1,5 @@
-from .constants import OP_MAP
-from .exceptions import InvalidOperatorError, ListOpNotSupportedError
 from .config import ProcessingConfig
+from .rules_engine import evaluate_gene_rules
 
 
 def process_paraphase_json(data: dict, config: ProcessingConfig) -> dict:
@@ -9,7 +8,6 @@ def process_paraphase_json(data: dict, config: ProcessingConfig) -> dict:
     """
     skip_keys = config.skip_keys
     genes_to_keep = config.genes_list
-    normal_values = config.normal_values
 
     handlers = {
         "region_depth": handle_region_depth,
@@ -24,16 +22,30 @@ def process_paraphase_json(data: dict, config: ProcessingConfig) -> dict:
         # Keep only selected genes
         data = {gene: info for gene, info in data.items() if gene in genes_to_keep}
 
-    return {
-        gene: process_gene_info(gene, info, handlers, skip_keys, normal_values)
-        for gene, info in data.items()
-    }
+    out = {}
+    for gene, info in data.items():
+        processed = process_gene_info(gene, info, handlers, skip_keys)
+
+        # Optional, per-gene classification rules
+        if config.rules:
+            status, matches = evaluate_gene_rules(gene, processed, config.rules)
+            if status is not None:
+                processed["status"] = status
+                # Keep a lightweight trace for debugging/auditing
+                if matches:
+                    processed["status_matches"] = [
+                        {"status": m.status, "rule_index": m.rule_index, "reason": m.reason}
+                        for m in matches
+                    ]
+
+        out[gene] = processed
+
+    return out
 
 
-def process_gene_info(gene_name, gene_info, handlers, skip_keys, normal_values):
+def process_gene_info(gene_name, gene_info, handlers, skip_keys):
     """
-    Wrap simple values under a gene with {value, normal, flag}.
-    normal_values: dict of gene -> key -> normal
+    Apply per-key handlers and drop skipped/None values under a gene.
     """
     processed = {}
     for key, value in gene_info.items():
@@ -43,69 +55,7 @@ def process_gene_info(gene_name, gene_info, handlers, skip_keys, normal_values):
         if key in handlers:
             value = handlers[key](value)
 
-        rule = normal_values.get(gene_name, {}).get(key)
-        if not rule:
-            processed[key] = value
-            continue
-
-        op = rule["op"]
-        normal = rule.get("normal")
-        normal_key = rule.get("normal_key")
-
-        if isinstance(value, list) and op not in ["==", "!=", "not_in"]:
-            raise ListOpNotSupportedError(
-                f"{gene_name} {key} is a list and op is {op}. Only '==', '!=' or 'not_in' is supported for lists."
-            )
-        if op not in OP_MAP and op not in ["between", "not_between"]:
-            raise InvalidOperatorError(
-                f"{gene_name} {key} has unsupported operator '{op}'."
-            )
-
-        if normal_key:
-            normal_value = gene_info.get(normal_key)
-            if normal_value is None:
-                raise KeyError(
-                    f"{gene_name}: key '{rule['normal_key']}' not found for comparison with '{key}'"
-                )
-            display_normal = normal_value
-        else:
-            if rule.get("min") is not None and rule.get("max") is not None:
-                normal_value = None  # will use min/max for comparison
-                display_normal = f"min({rule['min']}) - max({rule['max']})"
-            else:
-                normal_value = normal
-                display_normal = normal
-            if normal_value is None and op not in ["between", "not_between", "not_in"]:
-                raise ValueError(
-                    f"{gene_name} {key} has neither 'normal' nor 'normal_key'"
-                )
-
-        if op in ["<", "<=", ">", ">=", "between", "not_between"]:
-            try:
-                value_numeric = float(value)
-                normal_numeric = (
-                    float(normal_value) if normal_value is not None else None
-                )
-            except (TypeError, ValueError):
-                raise TypeError(
-                    f"{gene_name} {key}: cannot compare non-numeric values: {value} < {normal_value}"
-                )
-
-        if op == "between":
-            flag = rule["min"] <= value_numeric <= rule["max"]
-        elif op == "not_between":
-            flag = not (rule["min"] <= value_numeric <= rule["max"])
-        elif op == "not_in":
-            flag = value not in normal_value
-        elif op in ["<", "<=", ">", ">="]:
-            flag = OP_MAP[op](value_numeric, normal_numeric)
-        else:
-            flag = OP_MAP[op](value, normal_value)
-
-        if flag:
-            processed[key] = {"value": value, "normal": display_normal, "flag": flag}
-        else:
-            processed[key] = {"value": value, "normal": display_normal, "flag": flag}
+        processed[key] = value
 
     return processed
 

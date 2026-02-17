@@ -1,0 +1,12 @@
+smn1:
+  default_status: normal
+  status_order: [normal, intermediate, pathological]
+  rules:
+    - when:
+        smn1_cn: 0
+        smn2_cn: { ">=": 4 }
+      status: "intermediate"
+
+    - when:
+        smn1_cn: { "<": 2 }
+      status: "pathological"
