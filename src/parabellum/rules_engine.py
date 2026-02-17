@@ -58,8 +58,6 @@ def _apply_op(actual: Any, op: str, expected: Any) -> bool:
     if op not in COMPARISON_OPS:
         raise ValueError(f"Unsupported operator in rules: {op}")
 
-    # Unary \"not_empty\" operator: ignores expected, checks that the value is
-    # not one of the usual empty sentinels.
     if op == "not_empty":
         return actual not in (None, "", [], {})
 
@@ -161,8 +159,10 @@ def _status_rank(status: str, status_order: Optional[List[str]]) -> int:
     try:
         return status_order.index(status)
     except ValueError:
-        # Unknown statuses are treated as lowest priority (best/least severe)
-        return -1
+        raise ValueError(
+            f"Unknown status '{status}'. "
+            f"Allowed statuses: {status_order}"
+        )
 
 
 def evaluate_gene_rules(
