@@ -1,27 +1,12 @@
 from parabellum.rules_engine import evaluate_gene_rules, eval_when
 
 
-def test_eval_when_legacy_and_map_and_boolean_nodes():
+def test_eval_when_map_means_and_across_keys():
     gene_info = {"smn1_cn": 0, "smn2_cn": 5, "x": 1}
 
-    # legacy map-of-keys implies AND
+    # Multiple keys means AND across leaves
     assert eval_when(gene_info, {"smn1_cn": 0, "smn2_cn": {">=": 4}}) is True
     assert eval_when(gene_info, {"smn1_cn": 1, "smn2_cn": {">=": 4}}) is False
-
-    # boolean nodes
-    assert (
-        eval_when(
-            gene_info,
-            {
-                "any": [
-                    {"smn1_cn": 1},
-                    {"all": [{"smn1_cn": 0}, {"smn2_cn": {">=": 4}}]},
-                ]
-            },
-        )
-        is True
-    )
-    assert eval_when(gene_info, {"not": {"smn1_cn": 0}}) is False
 
 
 def test_evaluate_gene_rules_picks_most_severe_by_status_order_and_returns_matches():
@@ -32,7 +17,8 @@ def test_evaluate_gene_rules_picks_most_severe_by_status_order_and_returns_match
             "rules": [
                 {
                     "status": "intermediate",
-                    "when": {"all": [{"smn1_cn": 0}, {"smn2_cn": {">=": 4}}]},
+                    # AND across keys in the mapping
+                    "when": {"smn1_cn": 0, "smn2_cn": {">=": 4}},
                     "reason": "SMN1 deleted but SMN2 high",
                 },
                 {

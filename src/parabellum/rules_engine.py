@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple, Union
+import operator
 
 NUMERIC_FUNCS = {
     ">": operator.gt,
@@ -63,7 +64,7 @@ def _apply_op(actual: Any, op: str, expected: Any) -> bool:
     if op == "not_empty":
         return actual not in (None, "", [], {})
 
-    if op in NUMERIC_OPS:
+    if op in NUMERIC_FUNCS:
         a = _coerce_numeric(actual)
         e = _coerce_numeric(expected)
         if a is None or e is None:
@@ -92,8 +93,7 @@ def _eval_leaf(gene_info: Dict[str, Any], leaf: Dict[str, Any]) -> bool:
     """
     Leaf condition formats supported:
     - { key: scalar } -> equality
-    - { key: {">=": 4} } -> operator
-    - { key: {"<": 2, ">=": 0} } -> AND across operators
+    - { key: {">=": 4} } -> single operator
     """
     if len(leaf) != 1:
         # Avoid ambiguous leaf dicts; require single key.
@@ -103,8 +103,13 @@ def _eval_leaf(gene_info: Dict[str, Any], leaf: Dict[str, Any]) -> bool:
     actual = _get_path_value(gene_info, key)
 
     if isinstance(spec, dict):
-        # operator map
-        return all(_apply_op(actual, op, expected) for op, expected in spec.items())
+        # Exactly one operator per key to keep rules simple.
+        if len(spec) != 1:
+            raise ValueError(
+                f"Multiple operators for the same key are not supported: {leaf!r}"
+            )
+        op, expected = next(iter(spec.items()))
+        return _apply_op(actual, op, expected)
     else:
         return _apply_op(actual, "==", spec)
 
@@ -113,33 +118,16 @@ def eval_when(gene_info: Dict[str, Any], expr: Any) -> bool:
     """
     Evaluate a 'when' expression.
 
-    Supported boolean forms:
-    - {"all": [expr, expr, ...]}
-    - {"any": [expr, expr, ...]}
-    - {"not": expr}
-
-    Supported leaf form:
+    Supported form:
     - {key: value} or {key: {op: value}}
-
-    Backwards-compatible shortcut:
-    - {"k1": 1, "k2": {">=": 4}} means AND across keys.
+      Multiple keys in the same mapping are combined with AND, e.g.:
+        {k1: 1, k2: {\">=\": 4}} means (k1 == 1 AND k2 >= 4).
     """
     if expr is None:
         return True
 
-    # Boolean nodes
-    if isinstance(expr, dict) and "all" in expr:
-        items = expr.get("all") or []
-        return all(eval_when(gene_info, item) for item in items)
-    if isinstance(expr, dict) and "any" in expr:
-        items = expr.get("any") or []
-        return any(eval_when(gene_info, item) for item in items)
-    if isinstance(expr, dict) and "not" in expr:
-        return not eval_when(gene_info, expr.get("not"))
-
-    # Leaf or legacy map-of-leaves
     if isinstance(expr, dict):
-        # legacy: multiple keys -> AND of leaves
+        # Multiple keys -> AND of leaves
         if len(expr) > 1:
             return all(_eval_leaf(gene_info, {k: v}) for k, v in expr.items())
         return _eval_leaf(gene_info, expr)

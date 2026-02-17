@@ -36,8 +36,9 @@ uv run parabellum \
 
 ## Rules YAML (per-gene status classification)
 
-Rules are evaluated per gene and can express nested boolean logic. If multiple rules match, you can provide a `status_order`
-to pick the most severe (last wins by order).
+Rules are evaluated per gene. Conditions within a single `when` mapping are
+combined with logical AND (all must be true). If multiple rules match, you can
+provide a `status_order` to pick the most severe (last wins by order).
 
 Example:
 
@@ -50,9 +51,8 @@ smn1:
   rules:
     - status: intermediate
       when:
-        all:
-          - smn1_cn: 0
-          - smn2_cn: {">=": 4}
+        smn1_cn: 0
+        smn2_cn: {">=": 4}
       reason: "SMN1 deleted but SMN2 high"
     - status: pathological
       when:
