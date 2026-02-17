@@ -7,11 +7,15 @@ def process_paraphase_json(data: dict, config: ProcessingConfig) -> dict:
     Process a single sample JSON structure, applying handlers and optionally filtering genes.
     """
     skip_keys = config.skip_keys
-    genes_to_keep = config.genes_list
+    genes_to_keep = (
+        {g.lower() for g in config.genes_list} if config.genes_list else None
+    )
 
     handlers = {
         "region_depth": handle_region_depth,
         "final_haplotypes": handle_final_haplotypes,
+        "smn_del78_haplotypes": handle_final_haplotypes,
+        "smn2_del78_haplotypes": handle_final_haplotypes,
         "smn1_haplotypes": handle_final_haplotypes,
         "smn2_haplotypes": handle_final_haplotypes,
         "fusions_called": handle_fusions_called,
@@ -19,8 +23,12 @@ def process_paraphase_json(data: dict, config: ProcessingConfig) -> dict:
     }
 
     if genes_to_keep:
-        # Keep only selected genes
-        data = {gene: info for gene, info in data.items() if gene.lower() in genes_to_keep}
+        # Keep only selected genes (case-insensitive)
+        data = {
+            gene: info
+            for gene, info in data.items()
+            if gene.lower() in genes_to_keep
+        }
 
     out = {}
     for gene, info in data.items():
@@ -34,7 +42,11 @@ def process_paraphase_json(data: dict, config: ProcessingConfig) -> dict:
                 # Keep a lightweight trace in json
                 if matches:
                     processed["status_matches"] = [
-                        {"status": m.status, "rule_index": m.rule_index + 1, "reason": m.reason}
+                        {
+                            "status": m.status,
+                            "rule_index": m.rule_index,
+                            "rule": m.rule,
+                        }
                         for m in matches
                     ]
 

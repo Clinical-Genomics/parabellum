@@ -28,7 +28,7 @@ COMPARISON_OPS = {
 class RuleMatch:
     status: str
     rule_index: int
-    reason: str
+    rule: Dict[str, Any]  # full rule dict: at least "status" and "when"
 
 def _get_path_value(obj: Any, path: str) -> Any:
     """
@@ -109,9 +109,16 @@ def _eval_leaf(gene_info: Dict[str, Any], leaf: Dict[str, Any]) -> bool:
                 f"Multiple operators for the same key are not supported: {leaf!r}"
             )
         op, expected = next(iter(spec.items()))
+        # Resolve field reference: if expected is a string that is a key in
+        # gene_info, compare against that field's value (e.g. "<": genome_depth).
+        if isinstance(expected, str) and expected in gene_info:
+            expected = _get_path_value(gene_info, expected)
         return _apply_op(actual, op, expected)
     else:
-        return _apply_op(actual, "==", spec)
+        expected = spec
+        if isinstance(expected, str) and expected in gene_info:
+            expected = _get_path_value(gene_info, expected)
+        return _apply_op(actual, "==", expected)
 
 
 def eval_when(gene_info: Dict[str, Any], expr: Any) -> bool:
@@ -121,7 +128,7 @@ def eval_when(gene_info: Dict[str, Any], expr: Any) -> bool:
     Supported form:
     - {key: value} or {key: {op: value}}
       Multiple keys in the same mapping are combined with AND, e.g.:
-        {k1: 1, k2: {\">=\": 4}} means (k1 == 1 AND k2 >= 4).
+        {k1: 1, k2: {">=": 4}} means (k1 == 1 AND k2 >= 4).
     """
     if expr is None:
         return True
@@ -166,8 +173,16 @@ def evaluate_gene_rules(
 
     If `default_status` or `status_order` are omitted, they default to
     "normal" and ["normal", "intermediate", "pathological"] respectively.
+
+    Gene lookup in the rules YAML is case-insensitive (e.g. "f8" and "F8" match).
     """
     gene_rules = rules_yaml.get(gene)
+    if not gene_rules and isinstance(rules_yaml, dict):
+        gene_lower = gene.lower()
+        for k, v in rules_yaml.items():
+            if isinstance(k, str) and k.lower() == gene_lower:
+                gene_rules = v
+                break
     if not gene_rules:
         return None, []
 
@@ -190,7 +205,7 @@ def evaluate_gene_rules(
                 RuleMatch(
                     status=status,
                     rule_index=idx,
-                    reason=rule.get("reason") or f"Matched rule {idx} for {gene}",
+                    rule=dict(rule),  # copy for JSON output
                 )
             )
 

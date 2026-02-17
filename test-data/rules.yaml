@@ -1,17 +1,53 @@
-smn1:
+CFH:
   rules:
     - when:
-        smn1_cn: 0
-        smn2_cn: { ">=": 4 }
+        fusions_called:
+          not_empty: true
       status: "intermediate"
 
-    - when:
-        smn1_cn: { "<": 2 }
-      status: "pathological"
 CFHR3:
   rules:
     - when:
         fusions_called:
           not_empty: true
-        total_cn: 5
+      status: "intermediate"
+
+CYP11B1:
+  rules:
+    - when:
+        fusions_called:
+          not_empty: true
+      status: "pathological"
+
+f8:
+  rules:
+    - when:
+        sv_called:
+          not_empty: true
+      status: "pathological"
+
+GBA:
+  rules:
+    - when:
+        fusions_called:
+          not_empty: true
+      status: "intermediate"
+
+ikbkg:
+  rules:
+    - when:
+        deletion_haplotypes:
+          not_empty: true
+      status: "pathological"
+
+ncf1:
+  rules:
+    - when:
+        gene_cn: 0
+      status: "pathological"
+
+smn1:
+  rules:
+    - when:
+        smn1_cn: { "<": 2 }
       status: "pathological"

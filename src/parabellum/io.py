@@ -33,7 +33,7 @@ def print_tsv(json_data: Dict) -> List[Tuple[str, str, str, float, float]]:
     """
     Print results in TSV format.
     """
-    print("sample\tgene\tstatus\tkey\tvalue_str")
+    print("sample\tgene\tstatus\tkey\tvalue")
 
     for sample, genes in json_data.items():
         for gene, gene_info in genes.items():

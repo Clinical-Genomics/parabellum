@@ -35,6 +35,17 @@ def test_evaluate_gene_rules_picks_most_severe_by_status_order_and_returns_match
     assert {m.status for m in matches} == {"intermediate", "pathological"}
 
 
+def test_eval_when_field_reference():
+    """Compare a field to another field's value (e.g. exon depth < genome_depth)."""
+    gene_info = {"exon1_to_exon22_depth": 13.0, "genome_depth": 24.0}
+    assert eval_when(gene_info, {"exon1_to_exon22_depth": {"<": "genome_depth"}}) is True
+    gene_info_high = {"exon1_to_exon22_depth": 30.0, "genome_depth": 24.0}
+    assert (
+        eval_when(gene_info_high, {"exon1_to_exon22_depth": {"<": "genome_depth"}})
+        is False
+    )
+
+
 def test_evaluate_gene_rules_default_status_when_no_match():
     rules = {
         "smn1": {
