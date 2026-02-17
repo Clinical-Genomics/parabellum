@@ -1,15 +1,3 @@
-import operator
-
-OP_MAP = {
-    ">": operator.gt,
-    ">=": operator.ge,
-    "<": operator.lt,
-    "<=": operator.le,
-    "!=": operator.ne,
-    "==": operator.eq,
-    "not_in": lambda value, normal: value not in normal,
-}
-
 DEFAULT_SKIP_KEYS = (
     "alleles_all_haplotypes",
     "assembled_haplotypes",
