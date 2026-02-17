@@ -38,21 +38,17 @@ def print_tsv(json_data: Dict) -> List[Tuple[str, str, str, float, float]]:
     for sample, genes in json_data.items():
         for gene, gene_info in genes.items():
             # Gene-level status comes from the rules engine; if no rules were
-            # defined or no status was set, report it as "unknown".
+            # defined or no status was set, report it as "unknown"
             gene_status = gene_info.get("status")
             if not isinstance(gene_status, str):
                 gene_status = "unknown"
 
             for key, val in gene_info.items():
-                # Do not emit the per-gene status or rule-match metadata as separate rows.
+                # Do not emit the per-gene status or rule-match metadata as separate rows
                 if key in {"status", "status_matches"}:
                     continue
 
-                # Backwards-compatibility for any existing {value, normal, flag} wrappers:
-                if isinstance(val, dict) and {"value", "normal", "flag"}.issubset(val):
-                    value_str = stringify_value(val["value"])
-                else:
-                    value_str = stringify_value(val)
+                value_str = stringify_value(val)
 
                 print(f"{sample}\t{gene}\t{gene_status}\t{key}\t{value_str}")
 
