@@ -4,6 +4,7 @@ CFH:
         fusions_called:
           not_empty: true
       status: "intermediate"
+      reason: "Fusions called"
 
 CFHR3:
   rules:
@@ -11,6 +12,7 @@ CFHR3:
         fusions_called:
           not_empty: true
       status: "intermediate"
+      reason: "Fusions called"
 
 CYP11B1:
   rules:
@@ -18,6 +20,7 @@ CYP11B1:
         fusions_called:
           not_empty: true
       status: "pathological"
+      reason: "Fusions called"
 
 f8:
   rules:
@@ -25,6 +28,7 @@ f8:
         sv_called:
           not_empty: true
       status: "pathological"
+      reason: "Structural variant called"
 
 GBA:
   rules:
@@ -32,6 +36,7 @@ GBA:
         fusions_called:
           not_empty: true
       status: "intermediate"
+      reason: "Fusions called"
 
 ikbkg:
   rules:
@@ -39,15 +44,17 @@ ikbkg:
         deletion_haplotypes:
           not_empty: true
       status: "pathological"
+      reason: "Deletion haplotypes called"
 
 ncf1:
   rules:
     - when:
         gene_cn: 0
       status: "pathological"
-
+      reason: "Gene CN is 0 in ncf1"
 smn1:
   rules:
     - when:
         smn1_cn: { "<": 2 }
       status: "pathological"
+      reason: "SMN1 copy number is less than 2"

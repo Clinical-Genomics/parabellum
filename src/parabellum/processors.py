@@ -45,6 +45,7 @@ def process_paraphase_json(data: dict, config: ProcessingConfig) -> dict:
                         {
                             "status": m.status,
                             "rule_index": m.rule_index,
+                            "reason": m.rule.get("reason"),
                             "rule": m.rule,
                         }
                         for m in matches
