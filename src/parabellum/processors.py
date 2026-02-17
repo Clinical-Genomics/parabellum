@@ -31,10 +31,10 @@ def process_paraphase_json(data: dict, config: ProcessingConfig) -> dict:
             status, matches = evaluate_gene_rules(gene, processed, config.rules)
             if status is not None:
                 processed["status"] = status
-                # Keep a lightweight trace for debugging/auditing
+                # Keep a lightweight trace in json
                 if matches:
                     processed["status_matches"] = [
-                        {"status": m.status, "rule_index": m.rule_index, "reason": m.reason}
+                        {"status": m.status, "rule_index": m.rule_index + 1, "reason": m.reason}
                         for m in matches
                     ]
 
@@ -55,6 +55,7 @@ def process_gene_info(gene_name, gene_info, handlers, skip_keys):
         if key in handlers:
             value = handlers[key](value)
 
+        # TODO: Stringify values here instead, for both JSON and TSV output?
         processed[key] = value
 
     return processed

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -17,30 +15,20 @@ class RuleMatch:
     rule_index: int
     reason: str
 
-
-def _unwrap_value(v: Any) -> Any:
-    """If v is a {value, normal, flag} wrapper, return v['value']."""
-    if isinstance(v, dict) and {"value", "normal", "flag"}.issubset(v.keys()):
-        return v.get("value")
-    return v
-
-
 def _get_path_value(obj: Any, path: str) -> Any:
     """
     Get a possibly nested value from dict-like structures.
     Supports dot-paths like 'fusions_called.value.CFH_hap1.type'.
-    Transparently unwraps {value, normal, flag} wrappers at each hop.
     """
     cur = obj
     for part in path.split("."):
-        cur = _unwrap_value(cur)
         if cur is None:
             return None
         if isinstance(cur, dict):
             cur = cur.get(part)
         else:
             return None
-    return _unwrap_value(cur)
+    return cur
 
 
 def _coerce_numeric(x: Any) -> Optional[float]:
@@ -57,10 +45,6 @@ def _coerce_numeric(x: Any) -> Optional[float]:
 def _apply_op(actual: Any, op: str, expected: Any) -> bool:
     if op not in COMPARISON_OPS:
         raise ValueError(f"Unsupported operator in rules: {op}")
-
-    # Normalize wrappers and nested values
-    actual = _unwrap_value(actual)
-    expected = _unwrap_value(expected)
 
     if op in NUMERIC_OPS:
         a = _coerce_numeric(actual)
