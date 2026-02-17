@@ -1,6 +1,4 @@
 smn1:
-  default_status: normal
-  status_order: [normal, intermediate, pathological]
   rules:
     - when:
         smn1_cn: 0
@@ -9,4 +7,9 @@ smn1:
 
     - when:
         smn1_cn: { "<": 2 }
+      status: "pathological"
+CFHR3:
+  rules:
+    - when:
+        fusions_called: { "not_empty": true }
       status: "pathological"
