@@ -52,6 +52,10 @@ ncf1:
         gene_cn: 0
       status: "pathological"
       reason: "Gene CN is 0 in ncf1"
+    - when:
+        gene_cn: 1
+        status: "intermediate"
+        reason: "Gene CN is 1 in ncf1"
 smn1:
   rules:
     - when:
