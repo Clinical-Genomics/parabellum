@@ -64,12 +64,12 @@ def _apply_op(actual: Any, op: str, expected: Any) -> bool:
     if op == "not_empty":
         return actual not in (None, "", [], {})
 
-    if op in NUMERIC_FUNCS:
+    if op in NUMERIC_FUNCTIONS:
         a = _coerce_numeric(actual)
         e = _coerce_numeric(expected)
         if a is None or e is None:
             return False
-        return NUMERIC_FUNCS[op](a, e)
+        return NUMERIC_FUNCTIONS[op](a, e)
 
     if op == "==":
         return actual == expected
