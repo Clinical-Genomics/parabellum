@@ -53,47 +53,49 @@ def print_tsv(json_data: Dict) -> None:
                 print(f"{sample}\t{gene}\t{gene_status}\t{key}\t{value_str}")
 
 
-def stringify_value(value) -> str | None:
+def stringify_value(content) -> str | None:
     """
     Flatten nested dicts/lists for TSV output.
     - Skip empty or None values.
     - Top-level dict: key:value
     - Nested dicts: key=subkey=subvalue
     - Lists: joined by commas
+
+    value can be a string, int, float, list, or dict.
     """
-    if value in (None, [], {}):
+    if content in (None, [], {}):
         return None
 
-    if isinstance(value, (int, float, str)):
-        return str(value)
+    if isinstance(content, (int, float, str)):
+        return str(content)
 
-    if isinstance(value, list):
+    if isinstance(content, list):
         flat = []
-        for v in value:
-            if isinstance(v, list):
-                if inner := [str(i) for i in v if i is not None]:
+        for item in content:
+            if isinstance(item, list):
+                if inner := [str(item) for item in val if item is not None]:
                     flat.append(",".join(inner))
-            elif v is not None:
-                flat.append(str(v))
+            elif item is not None:
+                flat.append(str(item))
         return ",".join(flat) if flat else None
 
-    if isinstance(value, dict):
-        items = []
-        for k, v in value.items():
-            if v in (None, [], {}):
+    if isinstance(content, dict):
+        flattened_items = []
+        for key, value in content.items():
+            if value in (None, [], {}):
                 continue
-            if isinstance(v, dict):
+            if isinstance(value, dict):
                 # nested dicts: subkey=subvalue
                 if sub_items := [
-                    f"{subk}={stringify_value(subv)}"
-                    for subk, subv in v.items()
-                    if stringify_value(subv) is not None
+                    f"{subkey}={stringify_value(subvalue)}"
+                    for subkey, subvalue in value.items()
+                    if stringify_value(subvalue) is not None
                 ]:
-                    items.append(f"{k}:{'|'.join(sub_items)}")
+                    flattened_items.append(f"{key}:{'|'.join(sub_items)}")
             else:
-                v_str = stringify_value(v)
-                if v_str is not None:
-                    items.append(f"{k}:{v_str}")
-        return ";".join(items) if items else None
+                content_string = stringify_value(content)
+                if content_string is not None:
+                    items.append(f"{key}:{content_string}")
+        return ";".join(flattened_items) if flattened_items else None
 
-    return str(value)
+    return str(content)
