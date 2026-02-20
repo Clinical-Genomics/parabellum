@@ -61,7 +61,6 @@ def test_process_gene_info():
         "region_depth": handle_region_depth,
         "final_haplotypes": handle_final_haplotypes,
     }
-    gene_name = "smn1"
     gene_info = {
         "region_depth": {"median": 44.0, "percentile80": 48.0},
         "final_haplotypes": {
@@ -71,7 +70,7 @@ def test_process_gene_info():
     }
     skip_keys = {"final_haplotypes"}
     expected_output = {"region_depth": 44.0}
-    assert process_gene_info(gene_name, gene_info, handlers, skip_keys) == expected_output
+    assert process_gene_info(gene_info, handlers, skip_keys) == expected_output
 
 
     # The remaining tests in this module exercised the old `normal_values`-based

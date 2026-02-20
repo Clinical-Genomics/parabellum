@@ -32,7 +32,7 @@ def process_paraphase_json(data: dict, config: ProcessingConfig) -> dict:
 
     out = {}
     for gene, info in data.items():
-        processed = process_gene_info(gene, info, handlers, skip_keys)
+        processed = process_gene_info(info, handlers, skip_keys)
 
         # Optional, per-gene classification rules
         if config.rules:
@@ -56,7 +56,7 @@ def process_paraphase_json(data: dict, config: ProcessingConfig) -> dict:
     return out
 
 
-def process_gene_info(gene_name, gene_info, handlers, skip_keys):
+def process_gene_info(gene_info, handlers, skip_keys):
     """
     Apply per-key handlers and drop skipped/None values under a gene.
     """
