@@ -59,6 +59,6 @@ ncf1:
 smn1:
   rules:
     - when:
-        smn1_cn: { "<": 2 }
+        smn1_cn: { "<": 1 }
       status: "pathological"
       reason: "SMN1 copy number is less than 2"
