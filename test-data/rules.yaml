@@ -61,4 +61,4 @@ smn1:
     - when:
         smn1_cn: { "<": 1 }
       status: "pathological"
-      reason: "SMN1 copy number is less than 2"
+      reason: "SMN1 copy number is less than 1"
