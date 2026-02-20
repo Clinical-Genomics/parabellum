@@ -33,7 +33,7 @@ def print_tsv(json_data: Dict) -> None:
     """
     Print results in TSV format.
     """
-    print("sample\tlocus\tstatus\tkey\tvalue")
+    print("sample\tlocus\tstatus\tmetric\tvalue")
 
     for sample, locus in json_data.items():
         for locus, locus_info in locus.items():
@@ -44,12 +44,12 @@ def print_tsv(json_data: Dict) -> None:
                 locus_status = "unknown"
 
             # Iterate over locus information, e.g. region_depth, final_haplotypes, etc.
-            for key, value in locus_info.items():
+            for locus_metric, locus_metric_value in locus_info.items():
                 # Do not emit the per-gene status or rule-match metadata as separate rows
-                if key in {"status", "status_matches"}:
+                if locus_metric in {"status", "status_matches"}:
                     continue
-                prettified_value = stringify_value(value)
-                print(f"{sample}\t{locus}\t{locus_status}\t{key}\t{prettified_value}")
+                prettified_value = stringify_value(locus_metric_value)
+                print(f"{sample}\t{locus}\t{locus_status}\t{locus_metric}\t{prettified_value}")
 
 
 def stringify_value(content) -> str | None:

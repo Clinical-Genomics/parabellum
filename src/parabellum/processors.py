@@ -59,15 +59,15 @@ def process_gene_info(gene_info, handlers, skip_keys):
     Apply per-key handlers and drop skipped/None values under a gene.
     """
     processed = {}
-    for key, value in gene_info.items():
-        if key in skip_keys or value is None:
+    for gene_metric, gene_metric_value in gene_info.items():
+        if gene_metric in skip_keys or gene_metric_value is None:
             continue
 
-        if key in handlers:
-            value = handlers[key](value)
+        if gene_metric in handlers:
+            gene_metric_value = handlers[gene_metric](gene_metric_value)
 
         # TODO: Stringify values here instead, for both JSON and TSV output?
-        processed[key] = value
+        processed[gene_metric] = gene_metric_value
 
     return processed
 
@@ -101,11 +101,26 @@ def handle_dict_to_list(content):
     return [f"{key}:{value}" for key, value in content.items()]
 
 
-def handle_fusions_called(value):
+def handle_fusions_called(content):
     """
-    Remove sequence from fusions_called dict.
+    Remove sequence from fusions_called dict; e.g.:
+
+        "CFH_hap2": {
+            "type": "deletion",
+            "sequence": "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111122222222222222221112222122222122222222222212221112222222222222222122222222212222222222222222222222222222221222222222222222222222222222222222222222222221222222222222222222222222",
+            "breakpoint": [
+                [
+                    19675557,
+                    19760029
+                ],
+                [
+                    19684223,
+                    16844710
+                ]
+            ]
+        }
     """
     return {
-        hap: {k: v for k, v in hap_val.items() if k != "sequence"}
-        for hap, hap_val in value.items()
+        haplotype: {fusion_information: fusion_value for fusion_information, fusion_value in haplotype_dict.items() if fusion_information != "sequence"}
+        for haplotype, haplotype_dict in content.items()
     }

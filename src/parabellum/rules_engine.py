@@ -155,7 +155,7 @@ def _eval_leaf(gene_info: Dict[str, Any], leaf: Dict[str, Any]) -> bool:
         return _apply_operator(actual, "==", expected)
 
 
-def eval_when(gene_info: Dict[str, Any], expr: Any) -> bool:
+def eval_when(gene_info: Dict[str, Any], expression: Any) -> bool:
     """
     Evaluate a 'when' expression.
 
@@ -164,14 +164,14 @@ def eval_when(gene_info: Dict[str, Any], expr: Any) -> bool:
       Multiple keys in the same mapping are combined with AND, e.g.:
         {k1: 1, k2: {">=": 4}} means (k1 == 1 AND k2 >= 4).
     """
-    if expr is None:
+    if expression is None:
         return True
 
-    if isinstance(expr, dict):
+    if isinstance(expression, dict):
         # Multiple keys -> AND of leaves
-        if len(expr) > 1:
-            return all(_eval_leaf(gene_info, {k: v}) for k, v in expr.items())
-        return _eval_leaf(gene_info, expr)
+        if len(expression) > 1:
+            return all(_eval_leaf(gene_info, {gene_metric_to_flag: gene_metric_value}) for gene_metric_to_flag, gene_metric_value in expression.items())
+        return _eval_leaf(gene_info, expression)
 
     # Unknown structure
     return False
