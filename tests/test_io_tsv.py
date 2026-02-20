@@ -29,4 +29,3 @@ def test_print_tsv_uses_gene_status_and_hides_status_row(capsys):
 
     # CFH has no status, so should be 'unknown'
     assert "S1\tCFH\tunknown\tregion_depth\t41.0" in captured
-

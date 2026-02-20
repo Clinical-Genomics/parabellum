@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import operator
 
 NUMERIC_FUNCTIONS = {
@@ -9,20 +9,6 @@ NUMERIC_FUNCTIONS = {
     "<=": operator.le,
 }
 
-COMPARISON_OPS = {
-    ">",
-    ">=",
-    "<",
-    "<=",
-    "==",
-    "!=",
-    "in",
-    "not_in",
-    "contains",
-    "not_contains",
-    "not_empty",
-}
-
 
 @dataclass(frozen=True)
 class RuleMatch:
@@ -30,23 +16,27 @@ class RuleMatch:
     rule_index: int
     rule: Dict[str, Any]  # full rule dict: at least "status" and "when"
 
-def _get_path_value(obj: Any, path: str) -> Any:
+
+def _get_path_value(object: Any, path: str) -> Any:
     """
     Get a possibly nested value from dict-like structures.
     Supports dot-paths like 'fusions_called.value.CFH_hap1.type'.
     """
-    cur = obj
+    current = object
     for part in path.split("."):
-        if cur is None:
+        if current is None:
             return None
-        if isinstance(cur, dict):
-            cur = cur.get(part)
+        if isinstance(current, dict):
+            current = current.get(part)
         else:
             return None
-    return cur
+    return current
 
 
 def _coerce_numeric(x: Any) -> Optional[float]:
+    """
+    Coerce a value to a float.
+    """
     if isinstance(x, (int, float)):
         return float(x)
     if isinstance(x, str):
@@ -57,36 +47,80 @@ def _coerce_numeric(x: Any) -> Optional[float]:
     return None
 
 
-def _apply_op(actual: Any, op: str, expected: Any) -> bool:
-    if op not in COMPARISON_OPS:
-        raise ValueError(f"Unsupported operator in rules: {op}")
+def _op_not_empty(actual: Any, _: Any) -> bool:
+    return actual not in (None, "", [], {})
 
-    if op == "not_empty":
-        return actual not in (None, "", [], {})
 
-    if op in NUMERIC_FUNCTIONS:
-        a = _coerce_numeric(actual)
-        e = _coerce_numeric(expected)
-        if a is None or e is None:
+def _op_eq(actual: Any, expected: Any) -> bool:
+    return actual == expected
+
+
+def _op_ne(actual: Any, expected: Any) -> bool:
+    return actual != expected
+
+
+def _op_in(actual: Any, expected: Any) -> bool:
+    return actual in (expected or [])
+
+
+def _op_not_in(actual: Any, expected: Any) -> bool:
+    return actual not in (expected or [])
+
+
+def _op_contains(actual: Any, expected: Any) -> bool:
+    return expected in (actual or [])
+
+
+def _op_not_contains(actual: Any, expected: Any) -> bool:
+    return expected not in (actual or [])
+
+
+def _numeric_handler(
+    function: Callable[[float, float], bool],
+) -> Callable[[Any, Any], bool]:
+    """
+    Wrap a numeric function to coerce actual and expected values to floats.
+    """
+
+    def handler(actual: Any, expected: Any) -> bool:
+        actual = _coerce_numeric(actual)
+        expected = _coerce_numeric(expected)
+        if actual is None or expected is None:
             return False
-        return NUMERIC_FUNCTIONS[op](a, e)
+        return function(actual, expected)
 
-    if op == "==":
-        return actual == expected
-    if op == "!=":
-        return actual != expected
+    return handler
 
-    if op == "in":
-        return actual in (expected or [])
-    if op == "not_in":
-        return actual not in (expected or [])
 
-    if op == "contains":
-        return expected in (actual or [])
-    if op == "not_contains":
-        return expected not in (actual or [])
+# Numeric handlers are functions that take two floats and return a boolean.
+NUMERIC_HANDLERS = {
+    operator: _numeric_handler(function)
+    for operator, function in NUMERIC_FUNCTIONS.items()
+}
 
-    raise ValueError(f"Unsupported operator: {op}")
+# Operator handlers are functions that take two values and return a boolean.
+OPERATOR_HANDLERS = {
+    "not_empty": _op_not_empty,
+    "==": _op_eq,
+    "!=": _op_ne,
+    "in": _op_in,
+    "not_in": _op_not_in,
+    "contains": _op_contains,
+    "not_contains": _op_not_contains,
+    **NUMERIC_HANDLERS,
+}
+
+
+def _apply_operator(actual: Any, operator: str, expected: Any) -> bool:
+    """
+    Apply an operator to two values.
+    """
+    try:
+        handler = OPERATOR_HANDLERS[operator]
+    except KeyError:
+        raise ValueError(f"Unsupported operator in rules: {operator}")
+
+    return handler(actual, expected)
 
 
 def _eval_leaf(gene_info: Dict[str, Any], leaf: Dict[str, Any]) -> bool:
@@ -113,12 +147,12 @@ def _eval_leaf(gene_info: Dict[str, Any], leaf: Dict[str, Any]) -> bool:
         # gene_info, compare against that field's value (e.g. "<": genome_depth).
         if isinstance(expected, str) and expected in gene_info:
             expected = _get_path_value(gene_info, expected)
-        return _apply_op(actual, op, expected)
+        return _apply_operator(actual, op, expected)
     else:
         expected = spec
         if isinstance(expected, str) and expected in gene_info:
             expected = _get_path_value(gene_info, expected)
-        return _apply_op(actual, "==", expected)
+        return _apply_operator(actual, "==", expected)
 
 
 def eval_when(gene_info: Dict[str, Any], expr: Any) -> bool:
@@ -150,8 +184,7 @@ def _status_rank(status: str, status_order: Optional[List[str]]) -> int:
         return status_order.index(status)
     except ValueError:
         raise ValueError(
-            f"Unknown status '{status}'. "
-            f"Allowed statuses: {status_order}"
+            f"Unknown status '{status}'. " f"Allowed statuses: {status_order}"
         )
 
 
@@ -215,4 +248,3 @@ def evaluate_gene_rules(
     # Choose best match based on canonical severity order.
     selected = max(matches, key=lambda m: _status_rank(m.status, status_order))
     return selected.status, matches
-

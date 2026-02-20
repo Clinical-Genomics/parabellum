@@ -16,4 +16,3 @@ def test_not_empty_operator_on_dict_and_list():
 
     # Empty string should NOT satisfy not_empty
     assert eval_when(gene_info, {"notes": {"not_empty": True}}) is False
-

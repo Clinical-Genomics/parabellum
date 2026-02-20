@@ -72,7 +72,6 @@ def test_process_gene_info():
     expected_output = {"region_depth": 44.0}
     assert process_gene_info(gene_info, handlers, skip_keys) == expected_output
 
-
     # The remaining tests in this module exercised the old `normal_values`-based
     # per-key flagging logic, which has been superseded by the rules engine and
     # removed from `process_gene_info`. They are intentionally omitted here.

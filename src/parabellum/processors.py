@@ -25,9 +25,7 @@ def process_paraphase_json(data: dict, config: ProcessingConfig) -> dict:
     if genes_to_keep:
         # Keep only selected genes (case-insensitive)
         data = {
-            gene: info
-            for gene, info in data.items()
-            if gene.lower() in genes_to_keep
+            gene: info for gene, info in data.items() if gene.lower() in genes_to_keep
         }
 
     out = {}
