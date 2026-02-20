@@ -170,7 +170,10 @@ def eval_when(gene_info: Dict[str, Any], expression: Any) -> bool:
     if isinstance(expression, dict):
         # Multiple keys -> AND of leaves
         if len(expression) > 1:
-            return all(_eval_leaf(gene_info, {gene_metric_to_flag: gene_metric_value}) for gene_metric_to_flag, gene_metric_value in expression.items())
+            return all(
+                _eval_leaf(gene_info, {gene_metric_to_flag: gene_metric_value})
+                for gene_metric_to_flag, gene_metric_value in expression.items()
+            )
         return _eval_leaf(gene_info, expression)
 
     # Unknown structure
@@ -183,9 +186,7 @@ def _status_rank(status: str, status_order: Optional[List[str]]) -> int:
     try:
         return status_order.index(status)
     except ValueError:
-        raise ValueError(
-            f"Unknown status '{status}'. " f"Allowed statuses: {status_order}"
-        )
+        raise ValueError(f"Unknown status '{status}'. Allowed statuses: {status_order}")
 
 
 def evaluate_gene_rules(

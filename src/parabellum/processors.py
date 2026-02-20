@@ -121,6 +121,10 @@ def handle_fusions_called(content):
         }
     """
     return {
-        haplotype: {fusion_information: fusion_value for fusion_information, fusion_value in haplotype_dict.items() if fusion_information != "sequence"}
+        haplotype: {
+            fusion_information: fusion_value
+            for fusion_information, fusion_value in haplotype_dict.items()
+            if fusion_information != "sequence"
+        }
         for haplotype, haplotype_dict in content.items()
     }

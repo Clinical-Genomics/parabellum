@@ -49,7 +49,9 @@ def print_tsv(json_data: Dict) -> None:
                 if locus_metric in {"status", "status_matches"}:
                     continue
                 prettified_value = stringify_value(locus_metric_value)
-                print(f"{sample}\t{locus}\t{locus_status}\t{locus_metric}\t{prettified_value}")
+                print(
+                    f"{sample}\t{locus}\t{locus_status}\t{locus_metric}\t{prettified_value}"
+                )
 
 
 def stringify_value(content) -> str | None:
