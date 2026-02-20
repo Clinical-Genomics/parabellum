@@ -1,4 +1,4 @@
-DEFAULT_SKIP_KEYS = (
+DEFAULT_SKIP_KEYS: frozenset[str] = frozenset({
     "alleles_all_haplotypes",
     "assembled_haplotypes",
     "del_read_number",
