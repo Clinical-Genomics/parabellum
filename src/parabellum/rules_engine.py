@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple, Union
 import operator
 
-NUMERIC_FUNCS = {
+NUMERIC_FUNCTIONS = {
     ">": operator.gt,
     ">=": operator.ge,
     "<": operator.lt,
