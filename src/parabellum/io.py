@@ -84,12 +84,11 @@ def stringify_value(value) -> str | None:
                 continue
             if isinstance(v, dict):
                 # nested dicts: subkey=subvalue
-                sub_items = [
+                if sub_items := [
                     f"{subk}={stringify_value(subv)}"
                     for subk, subv in v.items()
                     if stringify_value(subv) is not None
-                ]
-                if sub_items:
+                ]:
                     items.append(f"{k}:{'|'.join(sub_items)}")
             else:
                 v_str = stringify_value(v)
