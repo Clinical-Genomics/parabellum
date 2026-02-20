@@ -29,7 +29,7 @@ def load_json(file: Path):
         raise JSONLoadError(f"Failed to read JSON file {file}: {e}")
 
 
-def print_tsv(json_data: Dict) -> List[Tuple[str, str, str, float, float]]:
+def print_tsv(json_data: Dict) -> None:
     """
     Print results in TSV format.
     """
