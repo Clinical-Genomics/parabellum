@@ -88,7 +88,7 @@ def handle_final_haplotypes(value):
     return list(value.values())
 
 
-def handle_dict_to_list(value):
+def handle_dict_to_list(content):
     """
     Convert dict to a list. E.g.
     "flanking_summary": {
@@ -98,7 +98,7 @@ def handle_dict_to_list(value):
     }
     to [f8_int22h2hap1:region2-region2, f8_int22h3hap1:region3-region3, f8_int22h1hap1:region1-region1]
     """
-    return [f"{k}:{v}" for k, v in value.items()]
+    return [f"{key}:{value}" for key, value in content.items()]
 
 
 def handle_fusions_called(value):

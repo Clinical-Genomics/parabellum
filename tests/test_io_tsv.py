@@ -20,7 +20,7 @@ def test_print_tsv_uses_gene_status_and_hides_status_row(capsys):
     captured = capsys.readouterr().out.strip().splitlines()
 
     # Header
-    assert captured[0] == "sample\tgene\tstatus\tkey\tvalue"
+    assert captured[0] == "sample\tlocus\tstatus\tkey\tvalue"
 
     # Rows for smn1: only the data key, not the status/status_matches keys
     assert "S1\tsmn1\tpathological\tregion_depth\t44.0" in captured

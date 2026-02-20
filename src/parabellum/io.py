@@ -33,24 +33,25 @@ def print_tsv(json_data: Dict) -> None:
     """
     Print results in TSV format.
     """
-    print("sample\tgene\tstatus\tkey\tvalue")
+    print("sample\tlocus\tstatus\tkey\tvalue")
 
-    for sample, genes in json_data.items():
-        for gene, gene_info in genes.items():
+    for sample, locus in json_data.items():
+        for locus, locus_info in locus.items():
             # Gene-level status comes from the rules engine; if no rules were
             # defined or no status was set, report it as "unknown"
-            gene_status = gene_info.get("status")
-            if not isinstance(gene_status, str):
-                gene_status = "unknown"
+            locus_status = locus_info.get("status")
+            if not isinstance(locus_status, str):
+                locus_status = "unknown"
 
-            for key, val in gene_info.items():
+            # Iterate over locus information, e.g. region_depth, final_haplotypes, etc.
+            for key, value in locus_info.items():
                 # Do not emit the per-gene status or rule-match metadata as separate rows
                 if key in {"status", "status_matches"}:
                     continue
 
-                value_str = stringify_value(val)
+                prettified_value = stringify_value(value)
 
-                print(f"{sample}\t{gene}\t{gene_status}\t{key}\t{value_str}")
+                print(f"{sample}\t{locus}\t{locus_status}\t{key}\t{prettified_value}")
 
 
 def stringify_value(content) -> str | None:
@@ -73,11 +74,11 @@ def stringify_value(content) -> str | None:
         flat = []
         for item in content:
             if isinstance(item, list):
-                if inner := [str(item) for item in val if item is not None]:
+                if inner := [str(element) for element in item if element is not None]:
                     flat.append(",".join(inner))
             elif item is not None:
                 flat.append(str(item))
-        return ",".join(flat) if flat else None
+        return "|".join(flat) if flat else None
 
     if isinstance(content, dict):
         flattened_items = []
@@ -86,16 +87,15 @@ def stringify_value(content) -> str | None:
                 continue
             if isinstance(value, dict):
                 # nested dicts: subkey=subvalue
-                if sub_items := [
-                    f"{subkey}={stringify_value(subvalue)}"
-                    for subkey, subvalue in value.items()
-                    if stringify_value(subvalue) is not None
-                ]:
-                    flattened_items.append(f"{key}:{'|'.join(sub_items)}")
+                sub_items = []
+                for subkey, subvalue in value.items():
+                    val_str = stringify_value(subvalue)
+                    if val_str is not None:
+                        sub_items.append(f"{subkey}={val_str}")
             else:
-                content_string = stringify_value(content)
+                content_string = stringify_value(value)
                 if content_string is not None:
-                    items.append(f"{key}:{content_string}")
+                    flattened_items.append(f"{key}:{content_string}")
         return ";".join(flattened_items) if flattened_items else None
 
     return str(content)
