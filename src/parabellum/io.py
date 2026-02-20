@@ -71,8 +71,7 @@ def stringify_value(value) -> str | None:
         flat = []
         for v in value:
             if isinstance(v, list):
-                inner = [str(i) for i in v if i is not None]
-                if inner:
+                if inner := [str(i) for i in v if i is not None]:
                     flat.append(",".join(inner))
             elif v is not None:
                 flat.append(str(v))
