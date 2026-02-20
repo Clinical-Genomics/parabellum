@@ -48,9 +48,7 @@ def print_tsv(json_data: Dict) -> None:
                 # Do not emit the per-gene status or rule-match metadata as separate rows
                 if key in {"status", "status_matches"}:
                     continue
-
                 prettified_value = stringify_value(value)
-
                 print(f"{sample}\t{locus}\t{locus_status}\t{key}\t{prettified_value}")
 
 
@@ -86,12 +84,13 @@ def stringify_value(content) -> str | None:
             if value in (None, [], {}):
                 continue
             if isinstance(value, dict):
-                # nested dicts: subkey=subvalue
                 sub_items = []
                 for subkey, subvalue in value.items():
-                    val_str = stringify_value(subvalue)
-                    if val_str is not None:
-                        sub_items.append(f"{subkey}={val_str}")
+                    prettified_subvalue = stringify_value(subvalue)
+                    if prettified_subvalue is not None:
+                        sub_items.append(f"{subkey}={prettified_subvalue}")
+                if sub_items:
+                    flattened_items.append(f"{key}:{'|'.join(sub_items)}")
             else:
                 content_string = stringify_value(value)
                 if content_string is not None:
