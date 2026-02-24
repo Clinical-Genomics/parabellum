@@ -3,9 +3,8 @@ import coloredlogs
 import yaml
 import json
 import logging
-import sys
 from .exceptions import JSONLoadError, YAMLLoadError
-from typing import Dict, List, Tuple
+from typing import Dict
 
 coloredlogs.install(level="INFO")
 logging.basicConfig(level=logging.DEBUG)
@@ -81,7 +80,9 @@ def stringify_value(content) -> str | None:
             flat = []
             for item in content:
                 if isinstance(item, list):
-                    if inner := [str(element) for element in item if element is not None]:
+                    if inner := [
+                        str(element) for element in item if element is not None
+                    ]:
                         flat.append("|".join(inner))
                     elif item is not None:
                         flat.append(str(item))

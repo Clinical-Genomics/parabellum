@@ -130,6 +130,7 @@ def handle_fusions_called(content):
         for haplotype, haplotype_dict in content.items()
     }
 
+
 def handle_phase_region(content: str | None) -> list[str]:
     """
     Strip the leading prefix from each phase region, and return a list.

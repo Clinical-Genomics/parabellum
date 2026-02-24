@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple
 import operator
 
 NUMERIC_FUNCTIONS = {

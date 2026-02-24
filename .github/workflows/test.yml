@@ -13,26 +13,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v7
-      with:
-        version: "latest"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
 
-    - name: Set up Python
-      uses: actions/setup-python@v6
-      with:
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
           python-version-file: ".python-version"
 
-    - name: Install dependencies
-      run: uv sync
+      - name: Install dependencies
+        run: uv sync
 
-    - name: Run tests with coverage
-      run: uv run pytest --cov=src --cov-report=xml --cov-report=term
+      - name: Run tests with coverage
+        run: uv run pytest --cov=src --cov-report=xml --cov-report=term
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./coverage.xml
-        fail_ci_if_error: false
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
