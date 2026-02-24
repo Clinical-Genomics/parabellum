@@ -20,7 +20,6 @@ DEFAULT_SKIP_KEYS: frozenset[str] = frozenset(
         "linked_haplotypes",
         "middle_copies",
         "nonunique_supporting_reads",
-        "phase_region",
         "phasing_success",
         "pseudo_reads",
         "raw_alleles",

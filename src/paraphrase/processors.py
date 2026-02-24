@@ -14,6 +14,7 @@ def process_paraphase_json(data: dict, config: ProcessingConfig) -> dict:
     handlers = {
         "region_depth": handle_region_depth,
         "final_haplotypes": handle_final_haplotypes,
+        "phase_region": handle_phase_region,
         "smn_del78_haplotypes": handle_final_haplotypes,
         "smn2_del78_haplotypes": handle_final_haplotypes,
         "smn1_haplotypes": handle_final_haplotypes,
@@ -128,3 +129,16 @@ def handle_fusions_called(content):
         }
         for haplotype, haplotype_dict in content.items()
     }
+
+def handle_phase_region(content: str | None) -> list[str]:
+    """
+    Strip the leading prefix from each phase region, and return a list.
+
+    Example:
+        "38:chr1:196740000-196772000,38:chr1:196786000-196830000" ->
+        ["chr1:196740000-196772000", "chr1:196786000-196830000"]
+    """
+    if not content:
+        return []
+
+    return [region.split(":", 1)[1] for region in content.split(",") if ":" in region]

@@ -19,4 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- [#8](https://github.com/Clinical-Genomics/paraphrase/pull/8) - Phase regions to output
 - [#9](https://github.com/Clinical-Genomics/paraphrase/pull/9) - Rework nested separators for TSV output
+- [#10](https://github.com/Clinical-Genomics/paraphrase/pull/10) - Updated CODEOWNERS
