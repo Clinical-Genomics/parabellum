@@ -161,7 +161,7 @@ wheels = [
 ]
 
 [[package]]
-name = "parabellum"
+name = "paraphrase"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
