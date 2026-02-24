@@ -52,11 +52,10 @@ smn1:
     - status: intermediate
       when:
         smn1_cn: 0
-        smn2_cn: {">=": 4}
+        smn2_cn: { ">=": 4 }
       reason: "SMN1 deleted but SMN2 high"
     - status: pathological
       when:
-        smn1_cn: {"<": 2}
+        smn1_cn: { "<": 2 }
       reason: "SMN1 copy number low"
 ```
-
