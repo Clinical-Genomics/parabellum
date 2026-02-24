@@ -57,12 +57,13 @@ def print_tsv(json_data: Dict) -> None:
 def stringify_value(content) -> str | None:
     """
     Flatten nested dicts/lists for TSV output.
-    - Skip empty or None values.
-    - Top-level dict: key:value
-    - Nested dicts: key=subkey=subvalue
-    - Lists: joined by commas
 
-    value can be a string, int, float, list, or dict.
+    Rules:
+        - Skip empty or None values.
+        - Dicts: key:value for top-level, key=subkey=subvalue for nested dicts
+        - Lists:
+            * Lists of simple values (str, int, float) are joined by commas.
+            * Lists of lists -> join inner list by '|', then outer by ','
     """
     if content in (None, [], {}):
         return None
@@ -71,32 +72,36 @@ def stringify_value(content) -> str | None:
         return str(content)
 
     if isinstance(content, list):
-        flat = []
-        for item in content:
-            if isinstance(item, list):
-                if inner := [str(element) for element in item if element is not None]:
-                    flat.append(",".join(inner))
-            elif item is not None:
-                flat.append(str(item))
-        return "|".join(flat) if flat else None
+        # If it's a list of simple values, join by commas
+        if all(not isinstance(item, list) for item in content):
+            flat = [str(element) for element in content if element is not None]
+            return ",".join(flat) if flat else None
+        else:
+            # Lists with sublists
+            flat = []
+            for item in content:
+                if isinstance(item, list):
+                    if inner := [str(element) for element in item if element is not None]:
+                        flat.append("|".join(inner))
+                    elif item is not None:
+                        flat.append(str(item))
+            return ",".join(flat) if flat else None
 
     if isinstance(content, dict):
-        flattened_items = []
+        flat = []
         for key, value in content.items():
             if value in (None, [], {}):
                 continue
             if isinstance(value, dict):
                 sub_items = []
                 for subkey, subvalue in value.items():
-                    prettified_subvalue = stringify_value(subvalue)
-                    if prettified_subvalue is not None:
+                    if prettified_subvalue := stringify_value(subvalue):
                         sub_items.append(f"{subkey}={prettified_subvalue}")
                 if sub_items:
-                    flattened_items.append(f"{key}:{'|'.join(sub_items)}")
+                    flat.append(f"{key}:{'|'.join(sub_items)}")
             else:
-                content_string = stringify_value(value)
-                if content_string is not None:
-                    flattened_items.append(f"{key}:{content_string}")
-        return ";".join(flattened_items) if flattened_items else None
+                if prettified_string := stringify_value(value):
+                    flat.append(f"{key}:{prettified_string}")
+        return ",".join(flat) if flat else None
 
     return str(content)

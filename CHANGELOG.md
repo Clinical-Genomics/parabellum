@@ -16,3 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#3](https://github.com/Clinical-Genomics/paraphrase/pull/3) - CODEOWNERS and PR template
 - [#4](https://github.com/Clinical-Genomics/paraphrase/pull/4) - Paraphase test data
 - [#7](https://github.com/Clinical-Genomics/paraphrase/pull/7) - Release workflow
+
+### Changed
+
+- [#9](https://github.com/Clinical-Genomics/paraphrase/pull/9) - Rework nested separators for TSV output
