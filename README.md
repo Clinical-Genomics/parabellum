@@ -1,4 +1,4 @@
-# Parabellum
+# Paraphrase
 
 Parse paraphase JSONs.
 
