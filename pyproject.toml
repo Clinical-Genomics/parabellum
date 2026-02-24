@@ -1,5 +1,5 @@
 [project]
-name = "parabellum"
+name = "paraphrase"
 version = "0.1.0"
 description = "Parse paraphase JSONs"
 authors = [{name="Felix Lenner", email="felix.lenner@scilifelab.se"}]
@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-parabellum = "parabellum.main:app"
+paraphrase = "paraphrase.main:app"
 
 [build-system]
 requires = ["hatchling"]
