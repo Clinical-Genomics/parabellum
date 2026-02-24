@@ -1,11 +1,11 @@
 import pytest
 
-"""Basic tests for parabellum."""
+"""Basic tests for paraphrase."""
 
 
 def test_process_paraphase_json():
-    from parabellum.processors import process_paraphase_json
-    from parabellum.config import ProcessingConfig
+    from paraphrase.processors import process_paraphase_json
+    from paraphrase.config import ProcessingConfig
 
     input_data = {
         "smn1": {
@@ -51,8 +51,8 @@ def test_process_paraphase_json():
 
 
 def test_process_gene_info():
-    from parabellum.processors import process_gene_info
-    from parabellum.processors import (
+    from paraphrase.processors import process_gene_info
+    from paraphrase.processors import (
         handle_region_depth,
         handle_final_haplotypes,
     )
@@ -78,7 +78,7 @@ def test_process_gene_info():
 
 
 def test_handle_region_depth():
-    from parabellum.processors import handle_region_depth
+    from paraphrase.processors import handle_region_depth
 
     input_data = {"median": 44.0, "percentile80": 48.0}
 
@@ -87,7 +87,7 @@ def test_handle_region_depth():
 
 
 def test_handle_final_haplotypes():
-    from parabellum.processors import handle_final_haplotypes
+    from paraphrase.processors import handle_final_haplotypes
 
     input_data = {
         "x22222122222221111111111": "smn1_smn2hap1",
@@ -99,7 +99,7 @@ def test_handle_final_haplotypes():
 
 
 def test_handle_dict_to_list():
-    from parabellum.processors import handle_dict_to_list
+    from paraphrase.processors import handle_dict_to_list
 
     input_data = {
         "f8_int22h2hap1": "region2-region2",
@@ -120,7 +120,7 @@ def test_handle_dict_to_list():
 
 
 def test_handle_fusions_called():
-    from parabellum.processors import handle_fusions_called
+    from paraphrase.processors import handle_fusions_called
 
     input_data = {
         "CFH_hap1": {

@@ -141,6 +141,4 @@ def handle_phase_region(content: str | None) -> list[str]:
     if not content:
         return []
 
-    list = [region.split(":", 1)[1] for region in content.split(",") if ":" in region]
-    print(list)
-    return list
+    return [region.split(":", 1)[1] for region in content.split(",") if ":" in region]

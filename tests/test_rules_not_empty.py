@@ -1,4 +1,4 @@
-from parabellum.rules_engine import eval_when
+from paraphrase.rules_engine import eval_when
 
 
 def test_not_empty_operator_on_dict_and_list():
