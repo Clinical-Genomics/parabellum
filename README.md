@@ -5,7 +5,7 @@ Parse paraphase JSONs.
 ## Usage
 
 ```
- Usage: parabellum [OPTIONS]
+ Usage: paraphrase [OPTIONS]
 
  Parse paraphase JSONs.
 
@@ -23,7 +23,7 @@ Parse paraphase JSONs.
 Example command:
 
 ```
-uv run parabellum \
+uv run paraphrase \
     --input test-data/HG002.paraphase.json \
     --input test-data/HG003.paraphase.json \
     --input test-data/HG004.paraphase.json \

@@ -1,4 +1,4 @@
-from parabellum.io import print_tsv
+from paraphrase.io import print_tsv
 
 
 def test_print_tsv_uses_gene_status_and_hides_status_row(capsys):

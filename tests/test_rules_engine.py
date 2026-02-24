@@ -1,4 +1,4 @@
-from parabellum.rules_engine import evaluate_gene_rules, eval_when
+from paraphrase.rules_engine import evaluate_gene_rules, eval_when
 
 
 def test_eval_when_map_means_and_across_keys():
