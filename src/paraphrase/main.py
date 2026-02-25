@@ -2,7 +2,6 @@
 import json
 from pathlib import Path
 from typing import List, Optional
-
 import importlib.metadata
 import typer
 from .constants import DEFAULT_SKIP_KEYS
