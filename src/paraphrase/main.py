@@ -2,12 +2,35 @@
 import json
 from pathlib import Path
 from typing import List, Optional
+import importlib.metadata
 import typer
 from .constants import DEFAULT_SKIP_KEYS
 from .pipeline import merge_and_process, assert_equal_inputs_and_samples
 from .io import load_json, load_yaml, print_tsv
 from .exceptions import InputMismatchError
 from .config import ProcessingConfig
+
+APP_NAME = "paraphrase"
+
+# Attempt to load version from package metadata, fallback to local __version__.py
+try:
+    import importlib.metadata
+
+    __version__ = importlib.metadata.version(APP_NAME)
+except importlib.metadata.PackageNotFoundError:
+    try:
+        from . import __version__ as _v
+
+        __version__ = _v.__version__
+    except ImportError:
+        __version__ = "unknown"
+
+
+def _version_callback(value: bool):
+    if value:
+        typer.echo(f"{APP_NAME} {__version__}")
+        raise typer.Exit()
+
 
 app = typer.Typer(
     rich_markup_mode="rich",
@@ -52,6 +75,14 @@ def main(
     ),
     output_format: str = typer.Option(
         "json", "--output-format", "-o", help="Output format: 'json' (default) or 'tsv'"
+    ),
+    version: bool = typer.Option(
+        False,
+        "--version",
+        help="Show the application version and exit.",
+        callback=_version_callback,
+        is_eager=True,
+        is_flag=True,
     ),
 ):
     """
