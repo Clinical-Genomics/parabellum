@@ -12,17 +12,23 @@ from .config import ProcessingConfig
 
 APP_NAME = "paraphrase"
 
+# Attempt to load version from package metadata, fallback to local __version__.py
+try:
+    import importlib.metadata
 
-def _get_version() -> str:
+    __version__ = importlib.metadata.version(APP_NAME)
+except importlib.metadata.PackageNotFoundError:
     try:
-        return importlib.metadata.version(APP_NAME)
-    except importlib.metadata.PackageNotFoundError:
-        return "unknown"
+        from . import __version__ as _v
+
+        __version__ = _v.__version__
+    except ImportError:
+        __version__ = "unknown"
 
 
 def _version_callback(value: bool):
     if value:
-        typer.echo(f"{APP_NAME} {_get_version()}")
+        typer.echo(f"{APP_NAME} {__version__}")
         raise typer.Exit()
 
 
@@ -70,12 +76,13 @@ def main(
     output_format: str = typer.Option(
         "json", "--output-format", "-o", help="Output format: 'json' (default) or 'tsv'"
     ),
-    version: Optional[bool] = typer.Option(
-        None,
+    version: bool = typer.Option(
+        False,
         "--version",
         help="Show the application version and exit.",
         callback=_version_callback,
         is_eager=True,
+        is_flag=True,
     ),
 ):
     """
